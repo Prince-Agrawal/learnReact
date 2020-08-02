@@ -4,9 +4,11 @@ import { Navbar, NavbarBrand } from "reactstrap";
 import Menu from "./MenuComponent";
 import Header from "./Header";
 import Footer from "./Footer";
+import Home from "./HomeComponent";
 import { Component } from "react";
 import { DISHES } from "../shared/dishes";
 import DishDetails from "./DishDetails";
+import { Switch, Route, Redirect } from "react-router-dom";
 
 class Main extends Component {
   constructor(props) {
@@ -22,20 +24,22 @@ class Main extends Component {
   }
 
   render() {
+    function HomePage() {
+      return (
+        <div>
+          <Home />
+        </div>
+      );
+    }
+
     return (
       <div>
         <Header />
-        <Menu
-          dishes={this.state.dishes}
-          onClick={(dishID) => this.onDishSelect(dishID)}
-        />
-        <DishDetails
-          dish={
-            this.state.dishes.filter(
-              (dish) => dish.id === this.state.selectedDish
-            )[0]
-          }
-        />
+        <Switch>
+              <Route path='/home' component={HomePage} />
+              <Route exact path='/menu' component={() => <Menu dishes={this.state.dishes} />} />
+              <Redirect to="/home" />
+          </Switch>
         <Footer />
       </div>
     );
