@@ -13,28 +13,20 @@ const RenderComment = ({ comments }) => {
     );
   });
 
-  return (
-    <div className="container">
-      <div className="row">{total_comments}</div>
-    </div>
-  );
+  return <div>{total_comments}</div>;
 };
 
 const RenderDish = ({ dish }) => {
   if (dish != null) {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-12 col-md-5 m-1">
-            <Card>
-              <CardImg top src={dish.image} alt={dish.name} />
-              <CardBody>
-                <CardTitle>{dish.name}</CardTitle>
-                <CardText>{dish.description}</CardText>
-              </CardBody>
-            </Card>
-          </div>
-        </div>
+      <div>
+        <Card>
+          <CardImg top src={dish.image} alt={dish.name} />
+          <CardBody>
+            <CardTitle>{dish.name}</CardTitle>
+            <CardText>{dish.description}</CardText>
+          </CardBody>
+        </Card>
       </div>
     );
   } else return <div></div>;
@@ -44,9 +36,13 @@ const DishDetails = ({ dish }) => {
   return (
     <div>
       {dish ? (
-        <div>
-          <RenderDish dish={dish} />
-          <RenderComment comments={dish.comments} />
+        <div className="container">
+          <div className="row">
+            <div className="col-12 col-md-5 m-1">
+              <RenderDish dish={dish} />
+            </div>
+            <RenderComment comments={dish.comments} />
+          </div>
         </div>
       ) : (
         <div></div>
