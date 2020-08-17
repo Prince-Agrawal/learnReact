@@ -19,8 +19,9 @@ import {
   FormFeedback,
 } from "reactstrap";
 import { Link } from "react-router-dom";
+import { Loading } from "./LoadingComponent";
 
-const RenderComments = ({ comments }) => {
+const RenderComments = ({ comments, addComment, dishId }) => {
   const total_comments = comments.map((comment) => {
     return (
       <div>
@@ -96,7 +97,12 @@ class DishDetails extends Component {
 
   handleSubmit(event) {
     console.log("Current State is: " + JSON.stringify(this.state));
-    alert("Current State is: " + JSON.stringify(this.state));
+    this.props.addComment(
+      this.props.dish.id,
+      this.state.rating,
+      this.state.your_name,
+      this.state.message
+    );
     event.preventDefault();
   }
 
@@ -118,87 +124,111 @@ class DishDetails extends Component {
 
   render() {
     const errors = this.validate(this.state.your_name);
-    console.log(errors.your_name);
-    return (
-      <div className="container">
-        <div className="row">
-          <Breadcrumb>
-            <BreadcrumbItem>
-              <Link to="/menu">Menu</Link>
-            </BreadcrumbItem>
-            <BreadcrumbItem active>{this.props.dish.name}</BreadcrumbItem>
-          </Breadcrumb>
-          <div className="col-12">
-            <h3>{this.props.dish.name}</h3>
-            <hr />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-12 col-md-5 m-1">
-            <RenderDish dish={this.props.dish} />
-          </div>
-          <div className="col-12 col-md-5 m-1">
-            <RenderComments comments={this.props.comments} />
-            <Button outline onClick={this.toggleModal}>
-              Comment
-            </Button>
-            <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
-              <ModalHeader toggle={this.toggleModal}>Comment</ModalHeader>
-              <ModalBody>
-                <Form onSubmit={this.handleSubmit}>
-                  <FormGroup>
-                    <Label htmlFor="rating">Rating</Label>
 
-                    <Input
-                      type="select"
-                      name="rating"
-                      value={this.state.rating}
-                      onBlur={this.handleBlur("rating")}
-                      onChange={this.handleInputChange}
-                    >
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                    </Input>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label htmlFor="name">Your Name</Label>
-                    <Input
-                      type="name"
-                      id="name"
-                      name="your_name"
-                      value={this.state.your_name}
-                      onBlur={this.handleBlur("your_name")}
-                      onChange={this.handleInputChange}
-                      valid={errors.firstname === ""}
-                      invalid={errors.firstname !== ""}
-                      // innerRef={(input) => (this.password = input)}
-                    />
-                    <FormFeedback>{errors.your_name}</FormFeedback>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label htmlFor="comment">Comment</Label>
-                    <Input
-                      type="comment"
-                      id="comment"
-                      name="message"
-                      value={this.state.message}
-                      onBlur={this.handleBlur("message")}
-                      onChange={this.handleInputChange}
-                      // innerRef={(input) => (this.password = input)}
-                    />
-                  </FormGroup>
-                  <Button type="submit" value="submit" color="primary">
-                    Submit
-                  </Button>
-                </Form>
-              </ModalBody>
-            </Modal>
+    if (this.props.isLoading) {
+      return (
+        <div className="container">
+          <div className="row">
+            <Loading />
           </div>
         </div>
-      </div>
-    );
+      );
+    } else if (this.props.errMess) {
+      return (
+        <div className="container">
+          <div className="row">
+            <h4>{this.props.errMess}</h4>
+          </div>
+        </div>
+      );
+    } else if (this.props.dish != null) {
+      return (
+        <div className="container">
+          <div className="row">
+            <Breadcrumb>
+              <BreadcrumbItem>
+                <Link to="/menu">Menu</Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem active>{this.props.dish.name}</BreadcrumbItem>
+            </Breadcrumb>
+            <div className="col-12">
+              <h3>{this.props.dish.name}</h3>
+              <hr />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-12 col-md-5 m-1">
+              <RenderDish dish={this.props.dish} />
+            </div>
+            <div className="col-12 col-md-5 m-1">
+              <RenderComments
+                comments={this.props.comments}
+                addComment={this.props.addComment}
+                dishId={this.props.dish.id}
+              />
+              <Button outline onClick={this.toggleModal}>
+                Comment
+              </Button>
+              <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
+                <ModalHeader toggle={this.toggleModal}>Comment</ModalHeader>
+                <ModalBody>
+                  <Form onSubmit={this.handleSubmit}>
+                    <FormGroup>
+                      <Label htmlFor="rating">Rating</Label>
+
+                      <Input
+                        type="select"
+                        name="rating"
+                        value={this.state.rating}
+                        onBlur={this.handleBlur("rating")}
+                        onChange={this.handleInputChange}
+                      >
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                      </Input>
+                    </FormGroup>
+                    <FormGroup>
+                      <Label htmlFor="name">Your Name</Label>
+                      <Input
+                        type="name"
+                        id="name"
+                        name="your_name"
+                        value={this.state.your_name}
+                        onBlur={this.handleBlur("your_name")}
+                        onChange={this.handleInputChange}
+                        valid={errors.firstname === ""}
+                        invalid={errors.firstname !== ""}
+                        // innerRef={(input) => (this.password = input)}
+                      />
+                      <FormFeedback>{errors.your_name}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                      <Label htmlFor="comment">Comment</Label>
+                      <Input
+                        type="comment"
+                        id="comment"
+                        name="message"
+                        value={this.state.message}
+                        onBlur={this.handleBlur("message")}
+                        onChange={this.handleInputChange}
+                        // innerRef={(input) => (this.password = input)}
+                      />
+                    </FormGroup>
+                    <Button type="submit" value="submit" color="primary">
+                      Submit
+                    </Button>
+                  </Form>
+                </ModalBody>
+              </Modal>
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return <div></div>;
+    }
   }
 }
 
